@@ -8,47 +8,55 @@ import type {
 
 class WeatherAPI {
   private createUrl(endpoint: string, params: Record<string, string | number>) {
-    const searchParams = new URLSearchParams({
-      appid: API_CONFIG.API_KEY,
-      ...params,
+    const searchParams = new URLSearchParams()
+
+    searchParams.append('appid', API_CONFIG.API_KEY)
+
+    Object.entries(params).forEach(([key, value]) => {
+      searchParams.append(key, value.toString())
     })
 
-    return `${endpoint}?${searchParams.toString}`
+    return `${endpoint}?${searchParams.toString()}`
   }
+
   private async fetchData<T>(url: string): Promise<T> {
     const response = await fetch(url)
 
     if (!response.ok) {
-      throw new Error(`Weather API Error: ${response.statusText}`)
+      const errorText = await response.text()
+      throw new Error(`Weather API Error (${response.status}): ${errorText}`)
     }
 
     return response.json()
   }
+
   async getCurrntWeather({ lat, lon }: Coordinates): Promise<WeatherData> {
     const url = this.createUrl(`${API_CONFIG.BASE_URL}/weather`, {
-      lat: lat.toString(),
-      lon: lon.toString(),
-      units: API_CONFIG.DEFAULT_PARAMS.unite,
+      lat,
+      lon,
+      units: API_CONFIG.DEFAULT_PARAMS.units,
     })
 
     return this.fetchData<WeatherData>(url)
   }
+
   async getForecast({ lat, lon }: Coordinates): Promise<ForecastData> {
     const url = this.createUrl(`${API_CONFIG.BASE_URL}/forecast`, {
-      lat: lat.toString(),
-      lon: lon.toString(),
-      units: API_CONFIG.DEFAULT_PARAMS.unite,
+      lat,
+      lon,
+      units: API_CONFIG.DEFAULT_PARAMS.units,
     })
 
     return this.fetchData<ForecastData>(url)
   }
+
   async reverseGeocode({
     lat,
     lon,
   }: Coordinates): Promise<GeocodingResponse[]> {
     const url = this.createUrl(`${API_CONFIG.GEO}/reverse`, {
-      lat: lat.toString(),
-      lon: lon.toString(),
+      lat,
+      lon,
       limit: 1,
     })
 

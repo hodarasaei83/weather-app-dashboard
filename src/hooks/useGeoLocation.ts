@@ -26,6 +26,10 @@ export function useGeoLocation() {
       return
     }
 
+    const isLocalhost =
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1'
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setLocationData({
@@ -37,7 +41,24 @@ export function useGeoLocation() {
           isLoading: false,
         })
       },
-      (error) => {
+      async (error) => {
+        try {
+          const ipResponse = await fetch('https://ipapi.co/json/')
+          const ipData = await ipResponse.json()
+
+          if (ipData.latitude && ipData.longitude) {
+            setLocationData({
+              coordinates: {
+                lat: ipData.latitude,
+                lon: ipData.longitude,
+              },
+              error: null,
+              isLoading: false,
+            })
+            return
+          }
+        } catch (ipError) {}
+
         let errorMessage: string
 
         switch (error.code) {
@@ -46,13 +67,15 @@ export function useGeoLocation() {
               'Location permission denied. Please enable location access.'
             break
           case error.POSITION_UNAVAILABLE:
-            errorMessage = 'Location information is unavailable.'
+            errorMessage =
+              'Location information is unavailable.' +
+              (isLocalhost ? ' Using approximate location based on IP.' : '')
             break
           case error.TIMEOUT:
             errorMessage = 'Location request timed out'
             break
           default:
-            errorMessage = 'An unknown error occured'
+            errorMessage = 'An unknown error occurred'
         }
 
         setLocationData({
@@ -62,9 +85,9 @@ export function useGeoLocation() {
         })
       },
       {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0,
+        enableHighAccuracy: !isLocalhost,
+        timeout: 10000,
+        maximumAge: isLocalhost ? 60 * 60 * 1000 : 0,
       }
     )
   }

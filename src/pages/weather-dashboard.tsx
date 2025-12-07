@@ -2,8 +2,10 @@ import { Button } from '@/components/ui/button'
 import {
   CoordinatesAlert,
   LocationErrorAlert,
+  QueryAlert,
 } from '@/components/view/components/Alert/Alert'
 import WeatherSkeleton from '@/components/view/components/Skeleton/loadingSkeleton'
+import CurrentWeather from '@/components/view/dashboard/CurrentWeather'
 import { useGeoLocation } from '@/hooks/useGeoLocation'
 import {
   useForecastQuery,
@@ -20,13 +22,24 @@ export default function WeatherDashboard() {
     isLoading: locationLoading,
   } = useGeoLocation()
 
-  const weatherQuery = useWeatherQuery(coordinates)
-  const forecastQuery = useForecastQuery(coordinates)
-  const locationQuery = useReverseGeocodeQuery(coordinates)
+  const hasValidCoordinates =
+    coordinates &&
+    typeof coordinates.lat === 'number' &&
+    typeof coordinates.lon === 'number' &&
+    coordinates.lat !== 0 &&
+    coordinates.lon !== 0
+
+  const weatherQuery = useWeatherQuery(hasValidCoordinates ? coordinates : null)
+  const forecastQuery = useForecastQuery(
+    hasValidCoordinates ? coordinates : null
+  )
+  const locationQuery = useReverseGeocodeQuery(
+    hasValidCoordinates ? coordinates : null
+  )
 
   const handleRefresh = () => {
     getLocation()
-    if (coordinates) {
+    if (hasValidCoordinates) {
       weatherQuery.refetch()
       forecastQuery.refetch()
       locationQuery.refetch()
@@ -46,19 +59,27 @@ export default function WeatherDashboard() {
     )
   }
 
-  if (!coordinates) {
+  if (!hasValidCoordinates) {
     return <CoordinatesAlert getLocation={getLocation} />
   }
 
-  const locationName = locationQuery.data?.[0]
-
   if (weatherQuery.error || forecastQuery.error) {
-    return <LocationErrorAlert handleRefresh={handleRefresh} />
+    return <QueryAlert handleRefresh={handleRefresh} />
+  }
+
+  if (
+    weatherQuery.isLoading ||
+    forecastQuery.isLoading ||
+    locationQuery.isLoading
+  ) {
+    return <WeatherSkeleton />
   }
 
   if (!weatherQuery.data || !forecastQuery.data) {
     return <WeatherSkeleton />
   }
+
+  const locationName = locationQuery.data?.[0]
 
   return (
     <div className="space-y-4">
@@ -80,7 +101,20 @@ export default function WeatherDashboard() {
         </Button>
       </div>
 
-      {/* {curr weather} */}
+      <div className="grid gap-6">
+        <div>
+          <CurrentWeather
+            data={weatherQuery.data}
+            locationName={locationName}
+          />
+          {/* current weather */}
+          {/* hourly temprature */}
+        </div>
+        <div>
+          {/* details */}
+          {/* forecast */}
+        </div>
+      </div>
     </div>
   )
 }
