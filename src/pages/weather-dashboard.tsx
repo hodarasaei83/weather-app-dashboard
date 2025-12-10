@@ -8,6 +8,7 @@ import WeatherSkeleton from '@/components/view/components/Skeleton/loadingSkelet
 import CurrentWeather from '@/components/view/dashboard/CurrentWeather'
 import HourlyTemperature from '@/components/view/dashboard/HourlyTemperature'
 import WeatherDetails from '@/components/view/dashboard/WeatherDetails'
+import WeatherForecast from '@/components/view/dashboard/WeatherForecast'
 import { useGeoLocation } from '@/hooks/useGeoLocation'
 import {
   useForecastQuery,
@@ -111,9 +112,9 @@ export default function WeatherDashboard() {
           />
           <HourlyTemperature data={forecastQuery.data} />
         </div>
-        <div>
+        <div className="grid gap-6 md:grid-cols-2 items-start">
           <WeatherDetails data={weatherQuery.data} />
-          {/* forecast */}
+          <WeatherForecast data={forecastQuery.data} />
         </div>
       </div>
     </div>
