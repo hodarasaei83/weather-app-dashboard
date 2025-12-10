@@ -9,6 +9,7 @@ export const WEATHER_KEYS = {
     ['forecast', coords?.lat, coords?.lon] as const,
   location: (coords: Coordinates | null) =>
     ['location', coords?.lat, coords?.lon] as const,
+  search: (query: string | null) => ['location-search', query] as const,
 } as const
 
 function isValidCoordinate(coords: Coordinates): boolean {
@@ -61,6 +62,21 @@ export function useReverseGeocodeQuery(coordinates: Coordinates | null) {
       return weatherAPI.reverseGeocode(coordinates)
     },
     enabled: !!coordinates && isValidCoordinate(coordinates),
+    retry: 1,
+    retryDelay: 1000,
+  })
+}
+
+export function useLocationSearch(query: string | null) {
+  return useQuery({
+    queryKey: WEATHER_KEYS.search(query),
+    queryFn: () => {
+      if (!query) {
+        return Promise.resolve(null)
+      }
+      return weatherAPI.searchLocations(query)
+    },
+    enabled: !!query && query.length >= 3,
     retry: 1,
     retryDelay: 1000,
   })
