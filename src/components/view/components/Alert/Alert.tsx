@@ -2,7 +2,23 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { AlertCircle, MapPin, RefreshCw } from 'lucide-react'
 
-export function LocationErrorAlert({ locationError, getLocation }) {
+interface LocationErrorAlertProps {
+  locationError: string
+  getLocation: () => void
+}
+
+interface CoordinatesAlertProps {
+  getLocation: () => void
+}
+
+interface QueryAlertProps {
+  handleRefresh: () => void
+}
+
+export function LocationErrorAlert({
+  locationError,
+  getLocation,
+}: LocationErrorAlertProps) {
   return (
     <Alert variant="destructive">
       <AlertCircle className="h-4 w-4" />
@@ -18,7 +34,7 @@ export function LocationErrorAlert({ locationError, getLocation }) {
   )
 }
 
-export function CoordinatesAlert({ getLocation }) {
+export function CoordinatesAlert({ getLocation }: CoordinatesAlertProps) {
   return (
     <Alert variant="destructive">
       <AlertCircle className="h-4 w-4" />
@@ -34,7 +50,7 @@ export function CoordinatesAlert({ getLocation }) {
   )
 }
 
-export function QueryAlert({ handleRefresh }) {
+export function QueryAlert({ handleRefresh }: QueryAlertProps) {
   return (
     <Alert variant="destructive">
       <AlertCircle className="h-4 w-4" />
