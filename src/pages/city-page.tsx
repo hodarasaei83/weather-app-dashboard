@@ -1,5 +1,5 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import FavoriteButton from '@/components/view/city-page/favoriteButton'
+import FavoriteButton from '@/components/view/cityPage/FavoriteButton'
 import WeatherSkeleton from '@/components/view/components/Skeleton/loadingSkeleton'
 import CurrentWeather from '@/components/view/dashboard/CurrentWeather'
 import HourlyTemperature from '@/components/view/dashboard/HourlyTemperature'
@@ -38,8 +38,6 @@ export default function CityPage() {
 
   return (
     <div className="space-y-4">
-      {/* {favorite contris} */}
-
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">
           {params.cityName}, {weatherQuery.data.sys.country}
