@@ -6,6 +6,7 @@ import {
 } from '@/components/view/components/Alert/Alert'
 import WeatherSkeleton from '@/components/view/components/Skeleton/loadingSkeleton'
 import CurrentWeather from '@/components/view/dashboard/CurrentWeather'
+import FavoriteCities from '@/components/view/dashboard/FavoriteCities'
 import HourlyTemperature from '@/components/view/dashboard/HourlyTemperature'
 import WeatherDetails from '@/components/view/dashboard/WeatherDetails'
 import WeatherForecast from '@/components/view/dashboard/WeatherForecast'
@@ -86,7 +87,7 @@ export default function WeatherDashboard() {
 
   return (
     <div className="space-y-4">
-      {/* {favorite contris} */}
+      <FavoriteCities />
 
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold tracking-tight">My Location</h1>
